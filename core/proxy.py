@@ -1,9 +1,8 @@
 import httpx
 from fastapi import HTTPException
-from fastapi.responses import JSONResponse
 
 
-async def proxy(url: str, params: dict | None = None) -> JSONResponse:
+async def proxy(url: str, params: dict | None = None) -> dict:
     """Realiza uma requisição GET ao serviço externo e repassa a resposta JSON."""
     try:
         async with httpx.AsyncClient(timeout=30.0) as client:
