@@ -8,7 +8,6 @@ from routers import (
     clima_marte,
     rovers_marte,
     midias,
-    patentes,
     sistema_solar,
     eventos_naturais,
     satelites,
@@ -30,7 +29,6 @@ app.include_router(camera_terra.router)
 app.include_router(clima_marte.router)
 app.include_router(rovers_marte.router)
 app.include_router(midias.router)
-app.include_router(patentes.router)
 app.include_router(sistema_solar.router)
 app.include_router(eventos_naturais.router)
 app.include_router(satelites.router)

@@ -1,6 +1,6 @@
 import os
 
-API_KEY: str = os.getenv("NASA_API_KEY", "DEMO_KEY")
+API_KEY: str = "EajsTprutYeCOJdTbZa5IJnNMbOfnmltjG67vRvm"
 
 NASA    = "https://api.nasa.gov"
 IMAGES  = "https://images-api.nasa.gov"
