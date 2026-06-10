@@ -23,24 +23,6 @@ const rovers = [
     camera: 'MASTCAM-Z',
     desc: 'Busca sinais de vida antiga no delta do Jezero e coleta amostras.',
   },
-  {
-    id: 'opportunity',
-    name: 'Opportunity',
-    launch: '8 Jul 2003',
-    landing: '25 Jan 2004',
-    status: 'Inativo',
-    camera: 'PANCAM',
-    desc: 'Missão concluída em 2019 após 15 anos operando na superfície de Marte.',
-  },
-  {
-    id: 'spirit',
-    name: 'Spirit',
-    launch: '10 Jun 2003',
-    landing: '4 Jan 2004',
-    status: 'Inativo',
-    camera: 'PANCAM',
-    desc: 'Missão encerrada em 2011 após ficar preso na areia em 2009.',
-  },
 ]
 </script>
 
@@ -52,10 +34,10 @@ const rovers = [
         <span> › Rovers em Marte</span>
       </nav>
       <h1 class="text-2xl font-bold mb-1">Rovers em Marte</h1>
-      <p class="text-sm text-white/40">Fotos capturadas pelos rovers NASA na superfície de Marte.</p>
+      <p class="text-sm text-white/40">Fotos recentes de Curiosity e Perseverance via Nebulum Mars Rover API.</p>
     </header>
 
-    <div class="grid grid-cols-2 gap-4">
+    <div class="grid grid-cols-4 gap-4">
       <div
         v-for="rover in rovers"
         :key="rover.id"

@@ -1,33 +1,25 @@
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useApi } from '../../composables/useApi.js'
 
 const tab = ref('fireball')
-const data = ref(null)
-const loading = ref(false)
-const error = ref(null)
+const { data, loading, error, run } = useApi()
 
 const tabs = [
-  { id: 'fireball', label: 'Bolas de Fogo', endpoint: '/api/ssd/fireball', key: 'data', fields: ['date', 'energy', 'impact-e', 'lat', 'lon', 'alt', 'vel'] },
-  { id: 'cad', label: 'Aproximações', endpoint: '/api/ssd/cad', key: 'data', fields: ['des', 'cd', 'dist', 'dist-min', 'v-rel', 'h', 'body'] },
-  { id: 'sentry', label: 'Risco de Impacto', endpoint: '/api/ssd/sentry', key: 'data', fields: ['des', 'name', 'ip', 'ps_max', 'last_obs', 'v_inf'] },
+  { id: 'fireball', label: 'Bolas de Fogo', endpoint: '/ssd/fireball', key: 'data', fields: ['date', 'energy', 'impact-e', 'lat', 'lon', 'alt', 'vel'] },
+  { id: 'cad', label: 'Aproximações', endpoint: '/ssd/cad', key: 'data', fields: ['des', 'cd', 'dist', 'dist-min', 'v-rel', 'h', 'body'] },
+  { id: 'sentry', label: 'Risco de Impacto', endpoint: '/ssd/sentry', key: 'data', fields: ['des', 'fullname', 'ip', 'ps_max', 'last_obs', 'v_inf'] },
 ]
 
-async function fetchTab(id) {
+function cellValue(row, field, index) {
+  if (Array.isArray(row)) return row[index] ?? '—'
+  return row[field] ?? '—'
+}
+
+function fetchTab(id) {
   tab.value = id
-  data.value = null
-  loading.value = true
-  error.value = null
   const t = tabs.find(x => x.id === id)
-  try {
-    const res = await fetch(t.endpoint)
-    if (!res.ok) throw new Error(res.status)
-    const json = await res.json()
-    data.value = json[t.key] ?? json
-  } catch (e) {
-    error.value = e.message
-  } finally {
-    loading.value = false
-  }
+  run(t.endpoint, { transform: (json) => json[t.key] ?? json })
 }
 
 const currentTab = () => tabs.find(t => t.id === tab.value)
@@ -90,7 +82,7 @@ onMounted(() => fetchTab('fireball'))
               class="px-4 py-3 text-white/60 whitespace-nowrap"
               :class="fi === 0 ? 'font-medium text-white/80' : ''"
             >
-              {{ row[fi] ?? '—' }}
+              {{ cellValue(row, field, fi) }}
             </td>
           </tr>
         </tbody>

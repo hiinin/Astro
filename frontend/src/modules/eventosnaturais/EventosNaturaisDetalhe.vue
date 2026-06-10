@@ -1,22 +1,11 @@
 <script setup>
-import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
+import { useApi } from '../../composables/useApi.js'
 
 const route = useRoute()
-const event = ref(null)
-const loading = ref(true)
-const error = ref(null)
-
-onMounted(async () => {
-  try {
-    const res = await fetch(`/api/eonet/events/${route.params.id}`)
-    if (!res.ok) throw new Error(res.status)
-    event.value = await res.json()
-  } catch (e) {
-    error.value = e.message
-  } finally {
-    loading.value = false
-  }
+const { data: event, loading, error } = useApi({
+  immediate: true,
+  url: () => `/eonet/events/${route.params.id}`,
 })
 </script>
 
@@ -51,7 +40,7 @@ onMounted(async () => {
         </div>
       </header>
 
-      <div class="grid grid-cols-3 gap-4 mb-6">
+      <div class="grid grid-cols-4 gap-4 mb-6">
         <div class="rounded-xl border border-white/[0.08] bg-white/[0.03] p-5">
           <p class="text-[11px] uppercase tracking-widest text-white/40 mb-3">Categorias</p>
           <div class="flex flex-wrap gap-1.5">

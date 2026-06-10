@@ -1,26 +1,12 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-
-const images = ref(null)
-const loading = ref(true)
-const error = ref(null)
+import { useApi } from '../../composables/useApi.js'
 
 function epicImageUrl(img) {
   const [y, m, d] = img.date.split(' ')[0].split('-')
   return `https://epic.gsfc.nasa.gov/archive/natural/${y}/${m}/${d}/png/${img.image}.png`
 }
 
-onMounted(async () => {
-  try {
-    const res = await fetch('/api/epic/natural')
-    if (!res.ok) throw new Error(res.status)
-    images.value = await res.json()
-  } catch (e) {
-    error.value = e.message
-  } finally {
-    loading.value = false
-  }
-})
+const { data: images, loading, error } = useApi({ immediate: true, url: '/epic/natural' })
 </script>
 
 <template>
@@ -41,9 +27,9 @@ onMounted(async () => {
 
     <p v-else-if="error" class="text-sm text-red-400 py-16">Falha ao carregar os dados ({{ error }}).</p>
 
-    <div v-else-if="images" class="grid grid-cols-3 gap-4">
+    <div v-else-if="images" class="grid grid-cols-4 gap-4">
       <div
-        v-for="img in images.slice(0, 18)"
+        v-for="img in images.slice(0, 16)"
         :key="img.identifier"
         class="rounded-xl border border-white/[0.08] bg-white/[0.03] overflow-hidden"
       >

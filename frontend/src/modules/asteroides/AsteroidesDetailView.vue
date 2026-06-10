@@ -1,11 +1,8 @@
 <script setup>
-import { ref } from 'vue'
 import { useRoute } from 'vue-router'
+import { useApi } from '../../composables/useApi.js'
 
 const route = useRoute()
-const asteroid = ref(null)
-const loading = ref(true)
-const error = ref(null)
 
 const diametro = [
   { label: 'km', key: 'kilometers' },
@@ -23,19 +20,10 @@ function magnitudeLabel(h) {
   return 'Asteroide pequeno.'
 }
 
-async function fetchAsteroid() {
-  try {
-    const res = await fetch(`/api/neo/lookup/${route.params.id}`)
-    if (!res.ok) throw new Error(res.status)
-    asteroid.value = await res.json()
-  } catch (e) {
-    error.value = e.message
-  } finally {
-    loading.value = false
-  }
-}
-
-fetchAsteroid()
+const { data: asteroid, loading, error } = useApi({
+  immediate: true,
+  url: () => `/neo/lookup/${route.params.id}`,
+})
 </script>
 
 <template>
@@ -84,7 +72,7 @@ fetchAsteroid()
       </div>
       <p class="text-xs text-white/35 mb-8">Dados fornecidos pela NASA NeoWs.</p>
 
-      <div class="grid grid-cols-3 gap-4 mb-4">
+      <div class="grid grid-cols-4 gap-4 mb-4">
         <div class="rounded-xl border border-white/[0.08] bg-white/[0.03] p-5">
           <p class="text-[11px] uppercase tracking-widest text-white/40 mb-4">Diâmetro Estimado</p>
           <dl class="space-y-2.5 text-xs text-white/70">
@@ -105,9 +93,14 @@ fetchAsteroid()
           <a :href="jplUrl(asteroid.id)" target="_blank" class="text-xs text-blue-400 hover:underline break-all">{{
             jplUrl(asteroid.id) }}</a>
         </div>
+        <div class="rounded-xl border border-white/[0.08] bg-white/[0.03] p-5">
+          <p class="text-[11px] uppercase tracking-widest text-white/40 mb-4">Aproximações</p>
+          <p class="text-3xl font-bold mb-2">{{ asteroid.close_approach_data?.length ?? 0 }}</p>
+          <p class="text-xs text-white/40">registros na base NeoWs</p>
+        </div>
       </div>
 
-      <div class="grid grid-cols-3 gap-4 mb-8">
+      <div class="grid grid-cols-4 gap-4 mb-8">
         <div class="rounded-xl border border-white/[0.08] bg-white/[0.03] p-5">
           <p class="text-[11px] uppercase tracking-widest text-white/40 mb-3">Tipo de Asteroide</p>
           <p class="text-sm">NEO (Near Earth Object)</p>
@@ -125,6 +118,13 @@ fetchAsteroid()
             <span class="text-white/35">{{ key }}: </span>
             <a :href="url" target="_blank" class="text-blue-400 hover:underline break-all">{{ url }}</a>
           </div>
+        </div>
+        <div class="rounded-xl border border-white/[0.08] bg-white/[0.03] p-5">
+          <p class="text-[11px] uppercase tracking-widest text-white/40 mb-3">Classe orbital</p>
+          <p class="text-sm font-medium">{{ asteroid.orbital_data?.orbit_class?.orbit_class_type ?? '—' }}</p>
+          <p class="text-xs text-white/40 mt-2 leading-relaxed">
+            {{ asteroid.orbital_data?.orbit_class?.orbit_class_description ?? '—' }}
+          </p>
         </div>
       </div>
 

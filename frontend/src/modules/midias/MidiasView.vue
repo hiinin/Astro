@@ -1,11 +1,9 @@
 <script setup>
 import { ref } from 'vue'
+import { useApi } from '../../composables/useApi.js'
 
 const query = ref('')
-const results = ref(null)
-const loading = ref(false)
-const error = ref(null)
-const searched = ref(false)
+const { data: results, loading, error, searched, search } = useApi()
 
 function thumbOf(item) {
   const links = item.links ?? []
@@ -13,22 +11,11 @@ function thumbOf(item) {
   return thumb?.href ?? null
 }
 
-async function search() {
+function handleSearch() {
   if (!query.value.trim()) return
-  loading.value = true
-  error.value = null
-  results.value = null
-  searched.value = true
-  try {
-    const res = await fetch(`/api/images/search?q=${encodeURIComponent(query.value)}&media_type=image`)
-    if (!res.ok) throw new Error(res.status)
-    const data = await res.json()
-    results.value = data.collection?.items ?? []
-  } catch (e) {
-    error.value = e.message
-  } finally {
-    loading.value = false
-  }
+  search(`/images/search?q=${encodeURIComponent(query.value)}&media_type=image`, {
+    transform: (data) => data.collection?.items ?? [],
+  })
 }
 </script>
 
@@ -43,7 +30,7 @@ async function search() {
       <p class="text-sm text-white/40">Biblioteca de imagens e vídeos da NASA.</p>
     </header>
 
-    <form @submit.prevent="search" class="flex gap-3 mb-6">
+    <form @submit.prevent="handleSearch" class="flex gap-3 mb-6">
       <input
         v-model="query"
         placeholder="Ex: Apollo 11, Mars, Hubble..."
@@ -68,7 +55,7 @@ async function search() {
       Nenhuma mídia encontrada para "{{ query }}".
     </p>
 
-    <div v-else-if="results?.length" class="grid grid-cols-3 gap-4">
+    <div v-else-if="results?.length" class="grid grid-cols-4 gap-4">
       <div
         v-for="(item, i) in results.slice(0, 30)"
         :key="i"

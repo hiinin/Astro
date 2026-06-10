@@ -1,13 +1,12 @@
 <script setup>
-import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useApi } from '../../composables/useApi.js'
 
 const router = useRouter()
-const asteroids = ref(null)
-
-onMounted(async () => {
-  const res = await fetch('/api/neo/browse')
-  asteroids.value = (await res.json()).near_earth_objects ?? []
+const { data: asteroids } = useApi({
+  immediate: true,
+  url: '/neo/browse',
+  transform: (data) => data.near_earth_objects ?? [],
 })
 </script>
 

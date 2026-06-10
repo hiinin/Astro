@@ -1,16 +1,19 @@
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, HTTPException, Query
 
-from core.config import TLE
+from core.config import CELESTRAK
 from core.proxy import proxy
 
 router = APIRouter(prefix="/tle", tags=["TLE – Elementos Orbitais de Satélites"])
 
 
 @router.get("")
-async def tle_search(request: Request):
-    return await proxy(TLE, dict(request.query_params))
+async def tle_search(search: str = Query(..., min_length=1)):
+    return await proxy(CELESTRAK, {"NAME": search, "FORMAT": "JSON"})
 
 
 @router.get("/{satellite_id}")
 async def tle_by_id(satellite_id: int):
-    return await proxy(f"{TLE}/{satellite_id}")
+    data = await proxy(CELESTRAK, {"CATNR": satellite_id, "FORMAT": "JSON"})
+    if not data:
+        raise HTTPException(status_code=404, detail="Satélite não encontrado.")
+    return data[0]

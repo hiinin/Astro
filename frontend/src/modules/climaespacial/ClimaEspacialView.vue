@@ -1,34 +1,23 @@
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useApi } from '../../composables/useApi.js'
 
 const tab = ref('cme')
-const data = ref(null)
-const loading = ref(false)
-const error = ref(null)
+const { data, loading, error, run } = useApi()
 
 const tabs = [
-  { id: 'cme', label: 'Ejeções de Massa Coronal', endpoint: '/api/donki/cme' },
-  { id: 'flr', label: 'Erupções Solares', endpoint: '/api/donki/flr' },
-  { id: 'gst', label: 'Tempestades Geomagnéticas', endpoint: '/api/donki/gst' },
-  { id: 'notifications', label: 'Notificações', endpoint: '/api/donki/notifications' },
+  { id: 'cme', label: 'Ejeções de Massa Coronal', endpoint: '/donki/cme' },
+  { id: 'flr', label: 'Erupções Solares', endpoint: '/donki/flr' },
+  { id: 'gst', label: 'Tempestades Geomagnéticas', endpoint: '/donki/gst' },
+  { id: 'notifications', label: 'Notificações', endpoint: '/donki/notifications' },
 ]
 
-async function fetchTab(id) {
+function fetchTab(id) {
   tab.value = id
-  data.value = null
-  loading.value = true
-  error.value = null
   const endpoint = tabs.find(t => t.id === id)?.endpoint
-  try {
-    const res = await fetch(endpoint)
-    if (!res.ok) throw new Error(res.status)
-    const json = await res.json()
-    data.value = Array.isArray(json) ? json : (json.items ?? [])
-  } catch (e) {
-    error.value = e.message
-  } finally {
-    loading.value = false
-  }
+  run(endpoint, {
+    transform: (json) => (Array.isArray(json) ? json : (json.items ?? [])),
+  })
 }
 
 onMounted(() => fetchTab('cme'))

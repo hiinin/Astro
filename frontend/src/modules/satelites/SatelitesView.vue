@@ -1,28 +1,13 @@
 <script setup>
 import { ref } from 'vue'
+import { useApi } from '../../composables/useApi.js'
 
 const query = ref('')
-const results = ref(null)
-const loading = ref(false)
-const error = ref(null)
-const searched = ref(false)
+const { data: results, loading, error, searched, search } = useApi()
 
-async function search() {
+function handleSearch() {
   if (!query.value.trim()) return
-  loading.value = true
-  error.value = null
-  results.value = null
-  searched.value = true
-  try {
-    const res = await fetch(`/api/tle?search=${encodeURIComponent(query.value)}`)
-    if (!res.ok) throw new Error(res.status)
-    const data = await res.json()
-    results.value = data.member ?? data ?? []
-  } catch (e) {
-    error.value = e.message
-  } finally {
-    loading.value = false
-  }
+  search(`/tle?search=${encodeURIComponent(query.value)}`)
 }
 </script>
 
@@ -37,7 +22,7 @@ async function search() {
       <p class="text-sm text-white/40">Elementos orbitais TLE de satélites via CelesTrak.</p>
     </header>
 
-    <form @submit.prevent="search" class="flex gap-3 mb-6">
+      <form @submit.prevent="handleSearch" class="flex gap-3 mb-6">
       <input
         v-model="query"
         placeholder="Ex: ISS, Hubble, Starlink..."
@@ -76,14 +61,14 @@ async function search() {
         <tbody>
           <tr
             v-for="sat in results.slice(0, 50)"
-            :key="sat['@id']"
+            :key="sat.NORAD_CAT_ID"
             class="border-b border-white/[0.05] last:border-0 hover:bg-white/[0.02]"
           >
-            <td class="px-5 py-3.5 font-medium">{{ sat.name }}</td>
-            <td class="px-5 py-3.5 text-white/50 font-mono text-xs">{{ sat.satelliteId }}</td>
-            <td class="px-5 py-3.5 text-white/50 text-xs">{{ sat.date?.split('T')[0] ?? '—' }}</td>
-            <td class="px-5 py-3.5 text-white/60">{{ sat.inclination != null ? `${Number(sat.inclination).toFixed(2)}°` : '—' }}</td>
-            <td class="px-5 py-3.5 text-white/50 text-xs">{{ sat.type ?? '—' }}</td>
+            <td class="px-5 py-3.5 font-medium">{{ sat.OBJECT_NAME }}</td>
+            <td class="px-5 py-3.5 text-white/50 font-mono text-xs">{{ sat.NORAD_CAT_ID }}</td>
+            <td class="px-5 py-3.5 text-white/50 text-xs">{{ sat.EPOCH?.split('T')[0] ?? '—' }}</td>
+            <td class="px-5 py-3.5 text-white/60">{{ sat.INCLINATION != null ? `${Number(sat.INCLINATION).toFixed(2)}°` : '—' }}</td>
+            <td class="px-5 py-3.5 text-white/50 text-xs">{{ sat.CLASSIFICATION_TYPE ?? '—' }}</td>
           </tr>
         </tbody>
       </table>

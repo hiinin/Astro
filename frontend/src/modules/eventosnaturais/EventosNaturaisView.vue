@@ -1,12 +1,15 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useApi } from '../../composables/useApi.js'
 
 const router = useRouter()
-const events = ref(null)
-const loading = ref(true)
-const error = ref(null)
 const search = ref('')
+const { data: events, loading, error } = useApi({
+  immediate: true,
+  url: '/eonet/events?limit=100',
+  transform: (data) => data.events ?? data ?? [],
+})
 
 const categoryColors = {
   'Wildfires': 'text-orange-400 bg-orange-500/10 border-orange-500/20',
@@ -20,19 +23,6 @@ function categoryClass(event) {
   const title = event.categories?.[0]?.title ?? ''
   return categoryColors[title] ?? 'text-white/40 bg-white/5 border-white/10'
 }
-
-onMounted(async () => {
-  try {
-    const res = await fetch('/api/eonet/events?limit=100')
-    if (!res.ok) throw new Error(res.status)
-    const data = await res.json()
-    events.value = data.events ?? data ?? []
-  } catch (e) {
-    error.value = e.message
-  } finally {
-    loading.value = false
-  }
-})
 
 const filtered = () =>
   (events.value ?? []).filter(e =>

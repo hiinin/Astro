@@ -1,23 +1,11 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, computed } from 'vue'
+import { useApi } from '../../composables/useApi.js'
 
-const planets = ref(null)
-const loading = ref(true)
-const error = ref(null)
 const search = ref('')
-
-onMounted(async () => {
-  try {
-    const res = await fetch(
-      '/api/exoplanet?table=pscomppars&select=pl_name,hostname,disc_year,discoverymethod,pl_orbper,pl_rade,pl_bmasse,sy_dist,pl_eqt&limit=200&format=json'
-    )
-    if (!res.ok) throw new Error(res.status)
-    planets.value = await res.json()
-  } catch (e) {
-    error.value = e.message
-  } finally {
-    loading.value = false
-  }
+const { data: planets, loading, error } = useApi({
+  immediate: true,
+  url: '/exoplanet?table=pscomppars&select=pl_name,hostname,disc_year,discoverymethod,pl_orbper,pl_rade,pl_bmasse,sy_dist,pl_eqt&limit=200&format=json',
 })
 
 const filtered = computed(() =>

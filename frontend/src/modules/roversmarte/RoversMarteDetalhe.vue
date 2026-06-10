@@ -1,31 +1,20 @@
 <script setup>
-import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
+import { useApi } from '../../composables/useApi.js'
 
 const route = useRoute()
-const photos = ref(null)
-const loading = ref(true)
-const error = ref(null)
-
+const { data: photos, loading, error } = useApi({
+  immediate: true,
+  parseErrorDetail: true,
+  url: () => `/mars-rovers/${route.params.rover}/latest-photos`,
+  transform: (data) => data.latest_photos ?? data.photos ?? [],
+})
 const roverName = {
   curiosity: 'Curiosity',
   perseverance: 'Perseverance',
   opportunity: 'Opportunity',
   spirit: 'Spirit',
 }
-
-onMounted(async () => {
-  try {
-    const res = await fetch(`/api/mars-rovers/${route.params.rover}/photos?sol=1000`)
-    if (!res.ok) throw new Error(res.status)
-    const data = await res.json()
-    photos.value = data.photos ?? []
-  } catch (e) {
-    error.value = e.message
-  } finally {
-    loading.value = false
-  }
-})
 </script>
 
 <template>
@@ -38,7 +27,7 @@ onMounted(async () => {
         <span> › {{ roverName[route.params.rover] ?? route.params.rover }}</span>
       </nav>
       <h1 class="text-2xl font-bold mb-1">{{ roverName[route.params.rover] ?? route.params.rover }}</h1>
-      <p class="text-sm text-white/40">Fotos do Sol marciano 1000. Dados via NASA Mars Rover Photos API.</p>
+      <p class="text-sm text-white/40">Fotos mais recentes do rover. Dados via Nebulum Mars Rover API.</p>
     </header>
 
     <div v-if="loading" class="flex items-center gap-3 text-sm text-white/40 py-16">
@@ -52,7 +41,7 @@ onMounted(async () => {
       Nenhuma foto encontrada para este Sol neste rover.
     </p>
 
-    <div v-else class="grid grid-cols-3 gap-4">
+    <div v-else class="grid grid-cols-4 gap-4">
       <div
         v-for="photo in photos?.slice(0, 30)"
         :key="photo.id"

@@ -1,23 +1,12 @@
 <script setup>
-import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
+import { useApi } from '../../composables/useApi.js'
 
 const route = useRoute()
-const project = ref(null)
-const loading = ref(true)
-const error = ref(null)
-
-onMounted(async () => {
-  try {
-    const res = await fetch(`/api/techport/projects/${route.params.id}`)
-    if (!res.ok) throw new Error(res.status)
-    const data = await res.json()
-    project.value = data.project ?? data
-  } catch (e) {
-    error.value = e.message
-  } finally {
-    loading.value = false
-  }
+const { data: project, loading, error } = useApi({
+  immediate: true,
+  url: () => `/techport/projects/${route.params.id}`,
+  transform: (data) => data.project ?? data,
 })
 </script>
 
@@ -42,7 +31,7 @@ onMounted(async () => {
         <p v-if="project.acronym" class="text-sm text-white/40">{{ project.acronym }}</p>
       </header>
 
-      <div class="grid grid-cols-3 gap-4 mb-6">
+      <div class="grid grid-cols-4 gap-4 mb-6">
         <div class="rounded-xl border border-white/[0.08] bg-white/[0.03] p-5">
           <p class="text-[11px] uppercase tracking-widest text-white/40 mb-3">Centro NASA</p>
           <p class="text-sm">{{ project.leadOrganization?.organizationName ?? '—' }}</p>

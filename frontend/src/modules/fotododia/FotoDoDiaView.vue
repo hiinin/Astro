@@ -1,21 +1,7 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { useApi } from '../../composables/useApi.js'
 
-const apod = ref(null)
-const loading = ref(true)
-const error = ref(null)
-
-onMounted(async () => {
-  try {
-    const res = await fetch('/api/apod')
-    if (!res.ok) throw new Error(res.status)
-    apod.value = await res.json()
-  } catch (e) {
-    error.value = e.message
-  } finally {
-    loading.value = false
-  }
-})
+const { data: apod, loading, error } = useApi({ immediate: true, url: '/apod' })
 </script>
 
 <template>

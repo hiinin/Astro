@@ -43,6 +43,18 @@ const routes = [
         meta: { label: 'Câmera da Terra' }
       },
       {
+        path: 'clima-marte',
+        name: 'clima-marte',
+        component: () => import('../modules/climamarte/ClimaMarteView.vue'),
+        meta: { label: 'Clima em Marte' }
+      },
+      {
+        path: 'imagens-terra',
+        name: 'imagens-terra',
+        component: () => import('../modules/imagens/ImagensTerraView.vue'),
+        meta: { label: 'Imagens da Terra' }
+      },
+      {
         path: 'rovers-marte',
         name: 'rovers-marte',
         component: () => import('../modules/roversmarte/RoversMarte.vue'),
@@ -113,6 +125,12 @@ const routes = [
         name: 'projetos-detalhe',
         component: () => import('../modules/projetos/ProjetosDetalhe.vue'),
         meta: { label: 'Projetos' }
+      },
+      {
+        path: 'techtransfer',
+        name: 'techtransfer',
+        component: () => import('../modules/techtransfer/TechTransferView.vue'),
+        meta: { label: 'TechTransfer' }
       },
     ]
   }
