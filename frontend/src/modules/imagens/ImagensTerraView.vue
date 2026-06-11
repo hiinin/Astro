@@ -76,41 +76,48 @@ const { lat, lon, dim, date, minDate, maxDate, result, loading, error, searched,
 
     <!-- Resultado -->
     <template v-else-if="result?.url">
-      <div class="rounded-2xl border border-white/[0.08] overflow-hidden">
+      <div class="rounded-2xl border border-white/[0.08] overflow-hidden flex">
 
-        <!-- Imagem em destaque -->
-        <div class="relative w-full bg-black" style="aspect-ratio: 16/7;">
+        <!-- Informações à esquerda -->
+        <div class="flex-1 p-6 flex flex-col justify-center gap-5">
+          <h2 class="text-lg font-semibold text-white/90">Detalhes da Imagem</h2>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div class="flex flex-col gap-1">
+              <span class="text-[10px] uppercase tracking-widest text-white/35 font-medium">Data</span>
+              <span class="text-sm text-white/70 font-medium">{{ result.date ?? '—' }}</span>
+            </div>
+            <div class="flex flex-col gap-1">
+              <span class="text-[10px] uppercase tracking-widest text-white/35 font-medium">Latitude</span>
+              <span class="text-sm text-white/60 font-mono">{{ lat }}°</span>
+            </div>
+            <div class="flex flex-col gap-1">
+              <span class="text-[10px] uppercase tracking-widest text-white/35 font-medium">Longitude</span>
+              <span class="text-sm text-white/60 font-mono">{{ lon }}°</span>
+            </div>
+            <div class="flex flex-col gap-1">
+              <span class="text-[10px] uppercase tracking-widest text-white/35 font-medium">Dimensão</span>
+              <span class="text-sm text-white/60 font-mono">{{ dim }}°</span>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-1 pt-2 border-t border-white/[0.06]">
+            <span class="text-[10px] uppercase tracking-widest text-white/35 font-medium">Fonte</span>
+            <span class="text-sm text-white/50">GIBS / NASA Earthdata</span>
+          </div>
+
+          <p class="text-xs text-white/30 mt-2">MODIS Terra · NASA Earthdata</p>
+        </div>
+
+        <!-- Imagem quadrada à direita -->
+        <div class="w-[400px] h-[400px] flex-shrink-0 bg-black">
           <img
             :src="result.url"
             alt="Imagem de satélite"
             class="w-full h-full object-cover"
           />
-          <div class="absolute bottom-0 left-0 right-0 px-5 py-3 bg-gradient-to-t from-black/70 to-transparent">
-            <p class="text-xs text-white/60">MODIS Terra · NASA Earthdata</p>
-          </div>
         </div>
 
-        <!-- Metadados em tabela -->
-        <table class="w-full text-xs border-t border-white/[0.08]">
-          <thead>
-            <tr class="bg-white/[0.04] border-b border-white/[0.08] text-white/40 uppercase tracking-widest text-[10px] font-medium">
-              <th class="px-5 py-3 text-left">Data</th>
-              <th class="px-5 py-3 text-left">Latitude</th>
-              <th class="px-5 py-3 text-left">Longitude</th>
-              <th class="px-5 py-3 text-left">Dimensão</th>
-              <th class="px-5 py-3 text-left">Fonte</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr class="hover:bg-white/[0.02] transition-colors">
-              <td class="px-5 py-3 text-white/70 font-medium">{{ result.date ?? '—' }}</td>
-              <td class="px-5 py-3 font-mono text-white/60">{{ lat }}°</td>
-              <td class="px-5 py-3 font-mono text-white/60">{{ lon }}°</td>
-              <td class="px-5 py-3 font-mono text-white/60">{{ dim }}°</td>
-              <td class="px-5 py-3 text-white/35">GIBS / NASA Earthdata</td>
-            </tr>
-          </tbody>
-        </table>
       </div>
     </template>
 

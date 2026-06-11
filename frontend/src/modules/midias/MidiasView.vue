@@ -1,11 +1,11 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useRequest as useApi } from '../../composables'
 import { mediaThumb } from '../../composables'
 
 const router = useRouter()
-const query = ref('')
+const query = ref('Earth')
 const { data: results, loading, error, searched, search } = useApi()
 
 function handleSearch() {
@@ -14,6 +14,10 @@ function handleSearch() {
     transform: (data) => data.collection?.items ?? [],
   })
 }
+
+onMounted(() => {
+  handleSearch()
+})
 
 function openMedia(item) {
   const d = item.data?.[0]

@@ -18,42 +18,30 @@ const { data: apod, loading, error } = useApi({ immediate: true, url: '/apod' })
     <p v-else-if="error" class="text-sm text-red-400 py-16">Falha ao carregar os dados ({{ error }}).</p>
 
     <template v-else-if="apod">
-      <!-- Imagem em destaque, full-width -->
-      <div class="rounded-2xl border border-white/[0.08] overflow-hidden mb-6">
+      <!-- Imagem em destaque com texto sobreposto -->
+      <div class="relative rounded-2xl border border-white/[0.08] overflow-hidden mb-6">
         <img
           v-if="apod.media_type === 'image'"
           :src="apod.url"
           :alt="apod.title"
-          class="w-full h-[480px] object-cover"
+          class="w-full h-[75vh] object-cover"
         />
         <iframe
           v-else-if="apod.media_type === 'video'"
           :src="apod.url"
-          class="w-full aspect-video"
+          class="w-full h-[75vh]"
           allowfullscreen
         />
-      </div>
 
-      <!-- Título + metadados em linha -->
-      <div class="flex flex-wrap items-start gap-x-10 gap-y-3 mb-6 pb-6 border-b border-white/[0.08]">
-        <div class="flex-1 min-w-[200px]">
-          <p class="text-[11px] uppercase tracking-widest text-white/40 mb-1">Título</p>
-          <p class="text-xl font-bold leading-snug">{{ apod.title }}</p>
+        <!-- Overlay com gradiente e textos em cima da foto -->
+        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex flex-col justify-end p-8">
+          <p class="text-xl md:text-3xl font-bold leading-snug mb-3">{{ apod.title }}</p>
+          <div class="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-white/80 mb-4">
+            <span>{{ apod.date }}</span>
+            <span v-if="apod.copyright">© {{ apod.copyright }}</span>
+          </div>
+          <p class="text-sm text-white/70 leading-relaxed max-w-4xl">{{ apod.explanation }}</p>
         </div>
-        <div>
-          <p class="text-[11px] uppercase tracking-widest text-white/40 mb-1">Data</p>
-          <p class="text-sm text-white/80">{{ apod.date }}</p>
-        </div>
-        <div v-if="apod.copyright">
-          <p class="text-[11px] uppercase tracking-widest text-white/40 mb-1">Crédito</p>
-          <p class="text-sm text-white/80">{{ apod.copyright }}</p>
-        </div>
-      </div>
-
-      <!-- Descrição full-width -->
-      <div>
-        <p class="text-[11px] uppercase tracking-widest text-white/40 mb-3">Descrição</p>
-        <p class="text-sm text-white/70 leading-relaxed max-w-4xl">{{ apod.explanation }}</p>
       </div>
     </template>
   </div>
