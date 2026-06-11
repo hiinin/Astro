@@ -19,6 +19,12 @@ const routes = [
     component: DefaultLayout,
     children: [
       {
+        path: 'inicio',
+        name: 'inicio',
+        component: () => import('../modules/inicio/inicioView.vue'),
+        meta: { label: 'Início' }
+      },
+      {
         path: 'asteroides',
         name: 'asteroides',
         component: () => import('../modules/asteroides/AsteroidesView.vue'),

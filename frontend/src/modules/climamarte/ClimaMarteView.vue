@@ -14,11 +14,7 @@ const latestSol = computed(() => {
 <template>
   <div class="min-h-full px-10 py-8 text-white">
     <header class="mb-8">
-      <nav class="mb-3 text-xs text-white/40">
-        <router-link to="/" class="hover:text-white/70 transition-colors">/ rotas</router-link>
-        <span> › Clima em Marte</span>
-      </nav>
-      <h1 class="text-2xl font-bold mb-1">Clima em Marte</h1>
+      <h1 class="text-4xl font-bold mb-1">Clima em Marte</h1>
       <p class="text-sm text-white/40">Dados meteorológicos da missão InSight na superfície marciana.</p>
     </header>
 
@@ -30,39 +26,79 @@ const latestSol = computed(() => {
     <p v-else-if="error" class="text-sm text-red-400 py-16">Falha ao carregar os dados ({{ error }}).</p>
 
     <template v-else-if="latestSol">
-      <p class="text-xs text-white/35 mb-5">
-        Sol marciano {{ latestSol.key }} · {{ latestSol.data.Season ?? '—' }}
-      </p>
+      <div class="rounded-2xl border border-white/[0.08] overflow-hidden">
+        <table class="w-full text-xs">
+          <thead>
+            <tr class="bg-white/[0.04] border-b border-white/[0.08] text-white/40 uppercase tracking-widest text-[10px] font-medium">
+              <th class="px-5 py-3 text-left">Métrica</th>
+              <th class="px-5 py-3 text-right">Média</th>
+              <th class="px-5 py-3 text-right">Mínimo</th>
+              <th class="px-5 py-3 text-right">Máximo</th>
+              <th class="px-5 py-3 text-left">Observação</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b border-white/[0.04] hover:bg-white/[0.03] transition-colors">
+              <td class="px-5 py-3 text-white/50 uppercase tracking-widest text-[10px]">Temperatura</td>
+              <td class="px-5 py-3 text-right font-mono text-white/80 font-medium text-sm">
+                {{ latestSol.data.AT?.av ?? '—' }}°C
+              </td>
+              <td class="px-5 py-3 text-right font-mono text-white/50">
+                {{ latestSol.data.AT?.mn ?? '—' }}°C
+              </td>
+              <td class="px-5 py-3 text-right font-mono text-white/50">
+                {{ latestSol.data.AT?.mx ?? '—' }}°C
+              </td>
+              <td class="px-5 py-3 text-white/35">Temperatura do ar (AT)</td>
+            </tr>
+            <tr class="border-b border-white/[0.04] hover:bg-white/[0.03] transition-colors">
+              <td class="px-5 py-3 text-white/50 uppercase tracking-widest text-[10px]">Vento</td>
+              <td class="px-5 py-3 text-right font-mono text-white/80 font-medium text-sm">
+                {{ latestSol.data.HWS?.av ?? '—' }} m/s
+              </td>
+              <td class="px-5 py-3 text-right font-mono text-white/50">
+                {{ latestSol.data.HWS?.mn ?? '—' }} m/s
+              </td>
+              <td class="px-5 py-3 text-right font-mono text-white/50">
+                {{ latestSol.data.HWS?.mx ?? '—' }} m/s
+              </td>
+              <td class="px-5 py-3 text-white/35">Velocidade horizontal do vento</td>
+            </tr>
+            <tr class="border-b border-white/[0.04] hover:bg-white/[0.03] transition-colors">
+              <td class="px-5 py-3 text-white/50 uppercase tracking-widest text-[10px]">Pressão</td>
+              <td class="px-5 py-3 text-right font-mono text-white/80 font-medium text-sm">
+                {{ latestSol.data.PRE?.av ?? '—' }} Pa
+              </td>
+              <td class="px-5 py-3 text-right font-mono text-white/50">
+                {{ latestSol.data.PRE?.mn ?? '—' }} Pa
+              </td>
+              <td class="px-5 py-3 text-right font-mono text-white/50">
+                {{ latestSol.data.PRE?.mx ?? '—' }} Pa
+              </td>
+              <td class="px-5 py-3 text-white/35">Pressão atmosférica (PRE)</td>
+            </tr>
+            <tr class="hover:bg-white/[0.03] transition-colors">
+              <td class="px-5 py-3 text-white/50 uppercase tracking-widest text-[10px]">Direção do vento</td>
+              <td class="px-5 py-3 text-right font-mono text-white/80 font-medium text-sm">
+                {{ latestSol.data.WD?.most_common?.compass_point ?? '—' }}
+              </td>
+              <td class="px-5 py-3 text-right font-mono text-white/50">—</td>
+              <td class="px-5 py-3 text-right font-mono text-white/50">—</td>
+              <td class="px-5 py-3 text-white/35">
+                {{ latestSol.data.WD?.most_common?.compass_degrees ?? '—' }}° predominante
+              </td>
+            </tr>
+          </tbody>
+        </table>
 
-      <div class="grid grid-cols-4 gap-4 mb-6">
-        <div class="rounded-xl border border-white/[0.08] bg-white/[0.03] p-5">
-          <p class="text-[11px] uppercase tracking-widest text-white/40 mb-2">Temperatura média</p>
-          <p class="text-2xl font-bold">{{ latestSol.data.AT?.av ?? '—' }}°C</p>
-          <p class="text-xs text-white/40 mt-1">
-            min {{ latestSol.data.AT?.mn }} · max {{ latestSol.data.AT?.mx }}
-          </p>
+        <div class="flex items-center justify-between px-5 py-3 border-t border-white/[0.06] bg-white/[0.02]">
+          <span class="text-[11px] text-white/30 uppercase tracking-widest">
+            Sol {{ latestSol.key }} · {{ latestSol.data.Season ?? '—' }}
+          </span>
+          <span class="text-[11px] text-white/25">
+            {{ latestSol.data.First_UTC?.split('T')[0] }} — {{ latestSol.data.Last_UTC?.split('T')[0] }}
+          </span>
         </div>
-        <div class="rounded-xl border border-white/[0.08] bg-white/[0.03] p-5">
-          <p class="text-[11px] uppercase tracking-widest text-white/40 mb-2">Vento</p>
-          <p class="text-2xl font-bold">{{ latestSol.data.HWS?.av ?? '—' }} m/s</p>
-          <p class="text-xs text-white/40 mt-1">média horária</p>
-        </div>
-        <div class="rounded-xl border border-white/[0.08] bg-white/[0.03] p-5">
-          <p class="text-[11px] uppercase tracking-widest text-white/40 mb-2">Pressão</p>
-          <p class="text-2xl font-bold">{{ latestSol.data.PRE?.av ?? '—' }}</p>
-          <p class="text-xs text-white/40 mt-1">Pa · atmosfera fina</p>
-        </div>
-        <div class="rounded-xl border border-white/[0.08] bg-white/[0.03] p-5">
-          <p class="text-[11px] uppercase tracking-widest text-white/40 mb-2">Direção do vento</p>
-          <p class="text-2xl font-bold">{{ latestSol.data.WD?.most_common?.compass_point ?? '—' }}</p>
-          <p class="text-xs text-white/40 mt-1">
-            {{ latestSol.data.WD?.most_common?.compass_degrees ?? '—' }}° predominante
-          </p>
-        </div>
-      </div>
-
-      <div class="rounded-xl border border-white/[0.08] bg-white/[0.03] p-5 text-xs text-white/50">
-        Período UTC: {{ latestSol.data.First_UTC?.split('T')[0] }} — {{ latestSol.data.Last_UTC?.split('T')[0] }}
       </div>
     </template>
   </div>

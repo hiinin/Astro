@@ -20,16 +20,9 @@ const { data: event, loading, error } = useApi({
 
     <template v-else-if="event">
       <header class="mb-8">
-        <nav class="mb-3 text-xs text-white/40">
-          <router-link to="/" class="hover:text-white/70 transition-colors">/ rotas</router-link>
-          <span> › </span>
-          <router-link to="/eventos-naturais" class="hover:text-white/70 transition-colors">Eventos Naturais</router-link>
-          <span> › {{ event.id }}</span>
-        </nav>
         <div class="flex items-start justify-between gap-4">
           <div>
-            <h1 class="text-3xl font-bold mb-2">{{ event.title }}</h1>
-            <p class="text-sm text-white/40">ID: {{ event.id }}</p>
+            <h1 class="text-4xl font-bold mb-2">{{ event.title }}</h1>
           </div>
           <span
             class="text-xs px-2 py-1 rounded border"

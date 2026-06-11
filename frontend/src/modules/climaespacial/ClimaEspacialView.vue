@@ -6,10 +6,10 @@ const tab = ref('cme')
 const { data, loading, error, run } = useApi()
 
 const tabs = [
-  { id: 'cme', label: 'Ejeções de Massa Coronal', endpoint: '/donki/cme' },
-  { id: 'flr', label: 'Erupções Solares', endpoint: '/donki/flr' },
-  { id: 'gst', label: 'Tempestades Geomagnéticas', endpoint: '/donki/gst' },
-  { id: 'notifications', label: 'Notificações', endpoint: '/donki/notifications' },
+  { id: 'cme',           label: 'Ejeções Coronais',      endpoint: '/donki/cme' },
+  { id: 'flr',           label: 'Erupções Solares',       endpoint: '/donki/flr' },
+  { id: 'gst',           label: 'Tempestades Geomag.',    endpoint: '/donki/gst' },
+  { id: 'notifications', label: 'Notificações',           endpoint: '/donki/notifications' },
 ]
 
 function fetchTab(id) {
@@ -26,66 +26,71 @@ onMounted(() => fetchTab('cme'))
 <template>
   <div class="min-h-full px-10 py-8 text-white">
     <header class="mb-8">
-      <nav class="mb-3 text-xs text-white/40">
-        <router-link to="/" class="hover:text-white/70 transition-colors">/ rotas</router-link>
-        <span> › Clima Espacial</span>
-      </nav>
-      <h1 class="text-2xl font-bold mb-1">Clima Espacial</h1>
-      <p class="text-sm text-white/40">Eventos solares e geomagnéticos via NASA DONKI.</p>
+      <h1 class="text-4xl font-bold mb-1">Clima Espacial</h1>
     </header>
 
-    <div class="flex gap-2 mb-6">
+    <!-- Tabs em cards -->
+    <div class="grid grid-cols-4 gap-3 mb-8">
       <button
         v-for="t in tabs"
         :key="t.id"
         @click="fetchTab(t.id)"
-        class="text-xs px-3 py-1.5 rounded-lg border transition-colors"
+        class="flex flex-col items-start gap-2 rounded-xl border px-4 py-3.5 text-left transition-colors"
         :class="tab === t.id
-          ? 'border-blue-500/50 bg-blue-500/10 text-blue-300'
-          : 'border-white/10 text-white/50 hover:text-white/80 hover:border-white/20'"
+          ? 'border-blue-500/40 bg-blue-500/10 text-blue-200'
+          : 'border-white/[0.08] bg-white/[0.02] text-white/50 hover:bg-white/[0.04] hover:text-white/70'"
       >
-        {{ t.label }}
+        <span class="text-xs font-medium leading-snug">{{ t.label }}</span>
       </button>
     </div>
 
+    <!-- Loading -->
     <div v-if="loading" class="flex items-center gap-3 text-sm text-white/40 py-16">
       <span class="size-4 rounded-full border-2 border-white/10 border-t-blue-400 animate-spin" />
       Carregando...
     </div>
 
+    <!-- Erro -->
     <p v-else-if="error" class="text-sm text-red-400 py-16">Falha ao carregar os dados ({{ error }}).</p>
 
+    <!-- Vazio -->
     <p v-else-if="data?.length === 0" class="text-sm text-white/40 py-8">
       Nenhum evento recente encontrado.
     </p>
 
-    <div v-else-if="data" class="rounded-xl border border-white/[0.08] overflow-hidden">
-      <table class="w-full text-sm">
-        <thead>
-          <tr class="border-b border-white/[0.08] text-left text-xs text-white/40 uppercase tracking-wider">
-            <th class="px-5 py-3 font-medium">ID</th>
-            <th class="px-5 py-3 font-medium">Início</th>
-            <th class="px-5 py-3 font-medium">Tipo</th>
-            <th class="px-5 py-3 font-medium">Observação</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            v-for="(item, i) in data.slice(0, 30)"
-            :key="i"
-            class="border-b border-white/[0.05] last:border-0 hover:bg-white/[0.02]"
-          >
-            <td class="px-5 py-3 text-white/40 text-xs font-mono">{{ item.activityID ?? item.notificationID ?? `#${i + 1}` }}</td>
-            <td class="px-5 py-3 text-white/60">{{ item.beginTime ?? item.startTime ?? item.messageIssueTime ?? '—' }}</td>
-            <td class="px-5 py-3">
-              <span class="text-xs px-2 py-0.5 rounded bg-blue-500/10 text-blue-300 border border-blue-500/20">
-                {{ item.cmeAnalyses?.[0]?.type ?? item.classType ?? item.kpIndex ?? tab.toUpperCase() }}
-              </span>
-            </td>
-            <td class="px-5 py-3 text-white/50 text-xs max-w-xs truncate">{{ item.note ?? item.messageBody ?? '—' }}</td>
-          </tr>
-        </tbody>
-      </table>
+    <!-- Cards de itens -->
+    <div v-else-if="data" class="flex flex-col gap-3">
+      <div
+        v-for="(item, i) in data.slice(0, 30)"
+        :key="i"
+        class="flex items-center gap-6 rounded-xl border border-white/[0.08] bg-white/[0.03] px-5 py-4 hover:bg-white/[0.05] transition-colors"
+      >
+        <!-- Badge tipo -->
+        <div class="shrink-0">
+          <span class="text-xs px-2.5 py-1 rounded-lg bg-blue-500/10 text-blue-300 border border-blue-500/20 font-mono font-medium">
+            {{ item.cmeAnalyses?.[0]?.type ?? item.classType ?? item.kpIndex ?? tab.toUpperCase() }}
+          </span>
+        </div>
+
+        <!-- ID + observação -->
+        <div class="flex-1 min-w-0">
+          <p class="text-xs font-mono text-white/35 mb-0.5 truncate">
+            {{ item.activityID ?? item.notificationID ?? `#${i + 1}` }}
+          </p>
+          <p class="text-sm text-white/60 truncate">
+            {{ item.note ?? item.messageBody ?? '—' }}
+          </p>
+        </div>
+
+        <!-- Data -->
+        <div class="shrink-0 flex flex-col gap-0.5 text-right">
+          <span class="text-[10px] uppercase tracking-widest text-white/30">Início</span>
+          <span class="text-xs text-white/55 font-mono">
+            {{ item.beginTime ?? item.startTime ?? item.messageIssueTime ?? '—' }}
+          </span>
+        </div>
+      </div>
     </div>
+
   </div>
 </template>

@@ -14,12 +14,12 @@ const { data: asteroids } = useApi({
   <div class="min-h-full px-10 py-8 text-white">
 
     <header class="mb-8">
-      <nav class="mb-3 text-xs text-white/40">
-        <router-link to="/" class="hover:text-white/70 transition-colors">/ rotas</router-link>
-        <span> › Asteroides</span>
-      </nav>
-      <h1 class="text-2xl font-bold mb-1">Asteroides</h1>
-      <p class="text-sm text-white/40">Dados fornecidos pela NASA NeoWs.</p>
+      <div class="flex items-end justify-between">
+        <div>
+          <h1 class="text-4xl font-bold mb-1">Asteroides</h1>
+        </div>
+        <p v-if="asteroids" class="text-xs text-white/25 mb-0.5">{{ asteroids.length }} objetos</p>
+      </div>
     </header>
 
     <div v-if="asteroids === null" class="flex items-center gap-3 text-sm text-white/40 py-16">
@@ -27,42 +27,47 @@ const { data: asteroids } = useApi({
       Carregando...
     </div>
 
-    <div v-else class="rounded-xl border border-white/[0.08] overflow-hidden">
-      <table class="w-full text-sm">
-        <thead>
-          <tr class="border-b border-white/[0.08] text-left text-xs text-white/40 uppercase tracking-wider">
-            <th class="px-5 py-3 font-medium">Nome</th>
-            <th class="px-5 py-3 font-medium">Magnitude</th>
-            <th class="px-5 py-3 font-medium">Diâmetro est. (km)</th>
-            <th class="px-5 py-3 font-medium">Risco</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            v-for="asteroid in asteroids"
-            :key="asteroid.id"
-            class="border-b border-white/[0.05] last:border-0 hover:bg-white/[0.03] cursor-pointer transition-colors"
-            @click="router.push(`/asteroides/${asteroid.id}`)"
+    <div v-else class="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4">
+      <div
+        v-for="(asteroid, i) in asteroids"
+        :key="asteroid.id"
+        class="group relative rounded-2xl border border-white/[0.08] bg-white/[0.03] p-5 cursor-pointer hover:bg-white/[0.06] hover:border-white/[0.14] transition-all duration-200"
+        @click="router.push(`/asteroides/${asteroid.id}`)"
+      >
+        <!-- Topo: índice + badge de risco -->
+        <div class="flex items-center justify-between mb-4">
+          <span class="text-[11px] text-white/20 tabular-nums">{{ String(i + 1).padStart(2, '0') }}</span>
+          <span
+            v-if="asteroid.is_potentially_hazardous_asteroid"
+            class="text-[11px] font-medium px-2 py-0.5 rounded-full bg-red-500/10 text-red-400 border border-red-500/20"
           >
-            <td class="px-5 py-3.5 font-medium">{{ asteroid.name }}</td>
-            <td class="px-5 py-3.5 text-white/60">{{ asteroid.absolute_magnitude_h }}</td>
-            <td class="px-5 py-3.5 text-white/60">
-              {{ asteroid.estimated_diameter?.kilometers?.estimated_diameter_min?.toFixed(3) }}
-              –
-              {{ asteroid.estimated_diameter?.kilometers?.estimated_diameter_max?.toFixed(3) }}
-            </td>
-            <td class="px-5 py-3.5">
-              <span
-                v-if="asteroid.is_potentially_hazardous_asteroid"
-                class="text-xs font-medium px-2 py-0.5 rounded bg-red-500/10 text-red-400 border border-red-500/20"
-              >
-                Perigoso
-              </span>
-              <span v-else class="text-white/25 text-xs">—</span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+            Perigoso
+          </span>
+          <span v-else class="text-[11px] text-white/20 px-2 py-0.5 rounded-full border border-white/[0.06]">Seguro</span>
+        </div>
+
+        <!-- Nome -->
+        <p class="font-semibold text-base leading-snug mb-5 truncate">{{ asteroid.name }}</p>
+
+        <!-- Métricas -->
+        <div class="grid grid-cols-2 gap-3">
+          <div class="rounded-xl bg-white/[0.04] px-3 py-2.5">
+            <p class="text-[11px] uppercase tracking-widest text-white/30 mb-1">Magnitude</p>
+            <p class="text-sm font-mono text-white/80">{{ asteroid.absolute_magnitude_h }}</p>
+          </div>
+          <div class="rounded-xl bg-white/[0.04] px-3 py-2.5">
+            <p class="text-[11px] uppercase tracking-widest text-white/30 mb-1">Diâmetro (km)</p>
+            <p class="text-sm font-mono text-white/80">
+              {{ asteroid.estimated_diameter?.kilometers?.estimated_diameter_min?.toFixed(2) }}
+              <span class="text-white/30">–</span>
+              {{ asteroid.estimated_diameter?.kilometers?.estimated_diameter_max?.toFixed(2) }}
+            </p>
+          </div>
+        </div>
+
+        <!-- Seta hover -->
+        <div class="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity text-white/30 text-sm">→</div>
+      </div>
     </div>
 
   </div>

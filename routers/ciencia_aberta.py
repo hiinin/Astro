@@ -12,7 +12,7 @@ async def osdr_study_files(study_ids: str, request: Request):
 
 
 @router.get("/study/meta/{study_id}")
-async def osdr_study_meta(study_id: int):
+async def osdr_study_meta(study_id: str):
     return await proxy(f"{OSDR}/osdr/data/osd/meta/{study_id}")
 
 

@@ -29,7 +29,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="Lunar Engine – NASA API Proxy",
+    title="Astro – NASA API Proxy",
     version="1.0.0",
     lifespan=lifespan,
 )

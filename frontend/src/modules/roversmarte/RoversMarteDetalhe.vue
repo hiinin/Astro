@@ -20,44 +20,73 @@ const roverName = {
 <template>
   <div class="min-h-full px-10 py-8 text-white">
     <header class="mb-8">
-      <nav class="mb-3 text-xs text-white/40">
-        <router-link to="/" class="hover:text-white/70 transition-colors">/ rotas</router-link>
-        <span> › </span>
-        <router-link to="/rovers-marte" class="hover:text-white/70 transition-colors">Rovers em Marte</router-link>
-        <span> › {{ roverName[route.params.rover] ?? route.params.rover }}</span>
-      </nav>
-      <h1 class="text-2xl font-bold mb-1">{{ roverName[route.params.rover] ?? route.params.rover }}</h1>
-      <p class="text-sm text-white/40">Fotos mais recentes do rover. Dados via Nebulum Mars Rover API.</p>
+      <h1 class="text-4xl font-bold mb-1">{{ roverName[route.params.rover] ?? route.params.rover }}</h1>
     </header>
 
+    <!-- Loading -->
     <div v-if="loading" class="flex items-center gap-3 text-sm text-white/40 py-16">
       <span class="size-4 rounded-full border-2 border-white/10 border-t-blue-400 animate-spin" />
       Carregando...
     </div>
 
+    <!-- Erro -->
     <p v-else-if="error" class="text-sm text-red-400 py-16">Falha ao carregar os dados ({{ error }}).</p>
 
+    <!-- Vazio -->
     <p v-else-if="photos?.length === 0" class="text-sm text-white/40 py-16">
       Nenhuma foto encontrada para este Sol neste rover.
     </p>
 
-    <div v-else class="grid grid-cols-4 gap-4">
+    <!-- Lista -->
+    <div v-else class="flex flex-col gap-3">
       <div
         v-for="photo in photos?.slice(0, 30)"
         :key="photo.id"
-        class="rounded-xl border border-white/[0.08] bg-white/[0.03] overflow-hidden"
+        class="flex items-stretch gap-0 rounded-xl border border-white/[0.08] bg-white/[0.03] overflow-hidden hover:bg-white/[0.05] transition-colors"
       >
-        <img
-          :src="photo.img_src"
-          :alt="`${photo.rover?.name} - ${photo.camera?.full_name}`"
-          class="w-full aspect-square object-cover"
-          loading="lazy"
-        />
-        <div class="p-3">
-          <p class="text-xs font-medium text-white/80 truncate">{{ photo.camera?.full_name }}</p>
-          <p class="text-[11px] text-white/40 mt-0.5">Sol {{ photo.sol }} · {{ photo.earth_date }}</p>
+        <!-- Imagem generosa à esquerda -->
+        <div class="shrink-0 w-56 h-40">
+          <img
+            :src="photo.img_src"
+            :alt="`${photo.rover?.name} - ${photo.camera?.full_name}`"
+            class="w-full h-full object-cover"
+            loading="lazy"
+          />
+        </div>
+
+        <!-- Divisor -->
+        <div class="w-px bg-white/[0.06] shrink-0" />
+
+        <!-- Conteúdo -->
+        <div class="flex flex-1 items-center gap-8 px-6">
+
+          <!-- Câmera -->
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-semibold text-white/85 truncate">{{ photo.camera?.full_name }}</p>
+            <p class="text-xs text-white/35 mt-0.5 font-mono">{{ photo.camera?.name }}</p>
+          </div>
+
+          <!-- Metadados -->
+          <div class="shrink-0 flex items-center gap-6 text-xs">
+            <div class="flex flex-col gap-0.5 text-right">
+              <span class="text-[10px] uppercase tracking-widest text-white/30">Sol</span>
+              <span class="text-white/65 font-mono">{{ photo.sol }}</span>
+            </div>
+            <div class="w-px h-6 bg-white/[0.08]" />
+            <div class="flex flex-col gap-0.5 text-right">
+              <span class="text-[10px] uppercase tracking-widest text-white/30">Data</span>
+              <span class="text-white/65 font-mono">{{ photo.earth_date }}</span>
+            </div>
+            <div class="w-px h-6 bg-white/[0.08]" />
+            <div class="flex flex-col gap-0.5 text-right">
+              <span class="text-[10px] uppercase tracking-widest text-white/30">ID</span>
+              <span class="text-white/35 font-mono">#{{ photo.id }}</span>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
+
   </div>
 </template>

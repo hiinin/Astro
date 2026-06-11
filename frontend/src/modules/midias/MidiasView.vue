@@ -21,16 +21,15 @@ function handleSearch() {
 
 <template>
   <div class="min-h-full px-10 py-8 text-white">
-    <header class="mb-8">
-      <nav class="mb-3 text-xs text-white/40">
-        <router-link to="/" class="hover:text-white/70 transition-colors">/ rotas</router-link>
-        <span> › Mídias</span>
-      </nav>
-      <h1 class="text-2xl font-bold mb-1">Mídias</h1>
-      <p class="text-sm text-white/40">Biblioteca de imagens e vídeos da NASA.</p>
+
+    <!-- Header -->
+    <header class="mb-10">
+      <h1 class="text-3xl font-bold tracking-tight mb-2">Mídias</h1>
+      <p class="text-sm text-white/50 max-w-md">Explore a vasta biblioteca de imagens capturadas durante missões, experimentos e observações espaciais.</p>
     </header>
 
-    <form @submit.prevent="handleSearch" class="flex gap-3 mb-6">
+    <!-- Search bar -->
+    <form @submit.prevent="handleSearch" class="flex gap-3 mb-10 w-full">
       <input
         v-model="query"
         placeholder="Ex: Apollo 11, Mars, Hubble..."
@@ -44,50 +43,72 @@ function handleSearch() {
       </button>
     </form>
 
-    <div v-if="loading" class="flex items-center gap-3 text-sm text-white/40 py-16">
-      <span class="size-4 rounded-full border-2 border-white/10 border-t-blue-400 animate-spin" />
-      Carregando...
+    <!-- Loading state -->
+    <div v-if="loading" class="flex flex-col items-center gap-3 text-sm text-white/40 py-20">
+      <span class="size-6 rounded-full border-2 border-white/10 border-t-blue-400 animate-spin" />
+      <span>Buscando mídias...</span>
     </div>
 
-    <p v-else-if="error" class="text-sm text-red-400 py-16">Falha ao carregar os dados ({{ error }}).</p>
+    <!-- Error state -->
+    <div v-else-if="error" class="text-center py-20">
+      <p class="text-sm text-red-400/80 bg-red-500/[0.06] border border-red-500/20 inline-block px-5 py-3 rounded-lg">
+        Falha ao carregar os dados ({{ error }}).
+      </p>
+    </div>
 
-    <p v-else-if="searched && results?.length === 0" class="text-sm text-white/40 py-8">
-      Nenhuma mídia encontrada para "{{ query }}".
-    </p>
+    <!-- Empty state -->
+    <div v-else-if="searched && results?.length === 0" class="text-center py-20">
+      <p class="text-white/40 text-sm">Nenhuma mídia encontrada para "<span class="text-white/60">{{ query }}</span>".</p>
+    </div>
 
-    <div v-else-if="results?.length" class="grid grid-cols-4 gap-4">
-      <div
-        v-for="(item, i) in results.slice(0, 30)"
-        :key="i"
-        class="rounded-xl border border-white/[0.08] bg-white/[0.03] overflow-hidden"
-      >
-        <div class="aspect-video bg-white/[0.03] flex items-center justify-center overflow-hidden">
-          <img
-            v-if="thumbOf(item)"
-            :src="thumbOf(item)"
-            :alt="item.data?.[0]?.title"
-            class="w-full h-full object-cover"
-            loading="lazy"
-          />
-          <span v-else class="text-white/20 text-xs">Sem prévia</span>
-        </div>
-        <div class="p-3">
-          <p class="text-xs font-medium text-white/80 line-clamp-2 leading-snug">{{ item.data?.[0]?.title }}</p>
-          <p class="text-[10px] text-white/35 mt-1">{{ item.data?.[0]?.date_created?.split('T')[0] }}</p>
-          <a
-            v-if="item.href"
-            :href="item.href"
-            target="_blank"
-            class="text-[10px] text-blue-400 hover:underline mt-1.5 block"
-          >
-            Ver detalhes ↗
-          </a>
+    <!-- Results grid -->
+    <div v-else-if="results?.length">
+      <p class="text-xs text-white/30 mb-4">Exibindo {{ Math.min(results.length, 30) }} resultados</p>
+
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+        <div
+          v-for="(item, i) in results.slice(0, 30)"
+          :key="i"
+          class="group rounded-2xl border border-white/[0.07] bg-white/[0.02] overflow-hidden hover:border-white/[0.15] hover:bg-white/[0.04] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-black/30"
+        >
+          <div class="aspect-[4/3] bg-white/[0.03] flex items-center justify-center overflow-hidden relative">
+            <img
+              v-if="thumbOf(item)"
+              :src="thumbOf(item)"
+              :alt="item.data?.[0]?.title"
+              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              loading="lazy"
+            />
+            <span v-else class="text-white/20 text-xs">Sem prévia</span>
+            <!-- Overlay gradient on hover -->
+            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          </div>
+          <div class="p-4">
+            <p class="text-xs font-medium text-white/80 line-clamp-2 leading-snug mb-2">{{ item.data?.[0]?.title }}</p>
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] text-white/30">{{ item.data?.[0]?.date_created?.split('T')[0] }}</span>
+              <a
+                v-if="item.href"
+                :href="item.href"
+                target="_blank"
+                class="text-[10px] text-blue-400/70 hover:text-blue-300 transition-colors"
+              >
+                Detalhes ↗
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
-    <div v-else-if="!searched" class="text-center py-16">
-      <p class="text-white/30 text-sm">Pesquise na biblioteca de imagens da NASA.</p>
+    <!-- Initial empty state -->
+    <div v-else-if="!searched" class="flex flex-col items-center justify-center py-24 gap-4">
+      <div class="size-16 rounded-full bg-white/[0.03] border border-white/[0.08] flex items-center justify-center">
+        <svg class="size-7 text-white/20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0 0 22.5 18.75V5.25A2.25 2.25 0 0 0 20.25 3H3.75A2.25 2.25 0 0 0 1.5 5.25v13.5A2.25 2.25 0 0 0 3.75 21Z" />
+        </svg>
+      </div>
+      <p class="text-white/30 text-sm">Pesquise na biblioteca de imagens da NASA</p>
     </div>
   </div>
 </template>

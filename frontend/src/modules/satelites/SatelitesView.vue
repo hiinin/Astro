@@ -14,15 +14,10 @@ function handleSearch() {
 <template>
   <div class="min-h-full px-10 py-8 text-white">
     <header class="mb-8">
-      <nav class="mb-3 text-xs text-white/40">
-        <router-link to="/" class="hover:text-white/70 transition-colors">/ rotas</router-link>
-        <span> › Satélites</span>
-      </nav>
-      <h1 class="text-2xl font-bold mb-1">Satélites</h1>
-      <p class="text-sm text-white/40">Elementos orbitais TLE de satélites via CelesTrak.</p>
+      <h1 class="text-4xl font-bold mb-1">Satélites</h1>
     </header>
 
-      <form @submit.prevent="handleSearch" class="flex gap-3 mb-6">
+    <form @submit.prevent="handleSearch" class="flex gap-3 mb-6">
       <input
         v-model="query"
         placeholder="Ex: ISS, Hubble, Starlink..."
@@ -30,7 +25,7 @@ function handleSearch() {
       />
       <button
         type="submit"
-        class="px-5 py-2.5 bg-blue-500/20 border border-blue-500/30 text-blue-300 text-sm rounded-lg hover:bg-blue-500/30 transition-colors"
+        class="px-5 py-2.5 bg-red-500/20 border border-red-500/30 text-orange-300 text-sm rounded-lg hover:bg-blue-red/30 transition-colors"
       >
         Buscar
       </button>
@@ -47,31 +42,36 @@ function handleSearch() {
       Nenhum satélite encontrado para "{{ query }}".
     </p>
 
-    <div v-else-if="results?.length" class="rounded-xl border border-white/[0.08] overflow-hidden">
-      <table class="w-full text-sm">
-        <thead>
-          <tr class="border-b border-white/[0.08] text-left text-xs text-white/40 uppercase tracking-wider">
-            <th class="px-5 py-3 font-medium">Nome</th>
-            <th class="px-5 py-3 font-medium">ID (NORAD)</th>
-            <th class="px-5 py-3 font-medium">Época</th>
-            <th class="px-5 py-3 font-medium">Inclinação</th>
-            <th class="px-5 py-3 font-medium">Tipo de Órbita</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            v-for="sat in results.slice(0, 50)"
-            :key="sat.NORAD_CAT_ID"
-            class="border-b border-white/[0.05] last:border-0 hover:bg-white/[0.02]"
-          >
-            <td class="px-5 py-3.5 font-medium">{{ sat.OBJECT_NAME }}</td>
-            <td class="px-5 py-3.5 text-white/50 font-mono text-xs">{{ sat.NORAD_CAT_ID }}</td>
-            <td class="px-5 py-3.5 text-white/50 text-xs">{{ sat.EPOCH?.split('T')[0] ?? '—' }}</td>
-            <td class="px-5 py-3.5 text-white/60">{{ sat.INCLINATION != null ? `${Number(sat.INCLINATION).toFixed(2)}°` : '—' }}</td>
-            <td class="px-5 py-3.5 text-white/50 text-xs">{{ sat.CLASSIFICATION_TYPE ?? '—' }}</td>
-          </tr>
-        </tbody>
-      </table>
+    <div v-else-if="results?.length" class="grid grid-cols-4 gap-3">
+      <div
+        v-for="sat in results.slice(0, 50)"
+        :key="sat.NORAD_CAT_ID"
+        class="rounded-xl border border-white/[0.08] bg-white/[0.03] p-5 flex flex-col gap-4 hover:bg-white/[0.05] transition-colors"
+      >
+        <div class="flex items-start justify-between gap-2">
+          <p class="text-sm font-semibold leading-tight text-white">{{ sat.OBJECT_NAME }}</p>
+          <span class="text-[10px] font-mono text-violet-400 bg-violet-500/10 border border-violet-500/20 px-1.5 py-0.5 rounded shrink-0">
+            {{ sat.NORAD_CAT_ID }}
+          </span>
+        </div>
+
+        <div class="flex flex-col gap-2 mt-auto">
+          <div class="flex justify-between items-center">
+            <span class="text-[10px] uppercase tracking-widest text-white/30">Inclinação</span>
+            <span class="text-xs font-mono text-cyan-400">
+              {{ sat.INCLINATION != null ? `${Number(sat.INCLINATION).toFixed(2)}°` : '—' }}
+            </span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-[10px] uppercase tracking-widest text-white/30">Época</span>
+            <span class="text-xs text-amber-400/80">{{ sat.EPOCH?.split('T')[0] ?? '—' }}</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-[10px] uppercase tracking-widest text-white/30">Órbita</span>
+            <span class="text-xs text-emerald-400/80">{{ sat.CLASSIFICATION_TYPE ?? '—' }}</span>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div v-else-if="!searched" class="text-center py-16">
