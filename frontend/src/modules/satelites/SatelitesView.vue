@@ -1,7 +1,9 @@
 <script setup>
 import { ref } from 'vue'
-import { useApi } from '../../composables/useApi.js'
+import { useRouter } from 'vue-router'
+import { useRequest as useApi } from '../../composables'
 
+const router = useRouter()
 const query = ref('')
 const { data: results, loading, error, searched, search } = useApi()
 
@@ -46,7 +48,8 @@ function handleSearch() {
       <div
         v-for="sat in results.slice(0, 50)"
         :key="sat.NORAD_CAT_ID"
-        class="rounded-xl border border-white/[0.08] bg-white/[0.03] p-5 flex flex-col gap-4 hover:bg-white/[0.05] transition-colors"
+        class="rounded-xl border border-white/[0.08] bg-white/[0.03] p-5 flex flex-col gap-4 hover:bg-white/[0.05] transition-colors cursor-pointer"
+        @click="router.push(`/satelites/${sat.NORAD_CAT_ID}`)"
       >
         <div class="flex items-start justify-between gap-2">
           <p class="text-sm font-semibold leading-tight text-white">{{ sat.OBJECT_NAME }}</p>

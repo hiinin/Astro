@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { useApi } from '../../composables/useApi.js'
+import { useRequest as useApi } from '../../composables'
 
 const router = useRouter()
 const search = ref('')

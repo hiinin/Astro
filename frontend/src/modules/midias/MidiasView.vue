@@ -1,21 +1,23 @@
 <script setup>
 import { ref } from 'vue'
-import { useApi } from '../../composables/useApi.js'
+import { useRouter } from 'vue-router'
+import { useRequest as useApi } from '../../composables'
+import { mediaThumb } from '../../composables'
 
+const router = useRouter()
 const query = ref('')
 const { data: results, loading, error, searched, search } = useApi()
-
-function thumbOf(item) {
-  const links = item.links ?? []
-  const thumb = links.find(l => l.rel === 'preview' || l.href?.endsWith('.jpg') || l.href?.endsWith('.png'))
-  return thumb?.href ?? null
-}
 
 function handleSearch() {
   if (!query.value.trim()) return
   search(`/images/search?q=${encodeURIComponent(query.value)}&media_type=image`, {
     transform: (data) => data.collection?.items ?? [],
   })
+}
+
+function openMedia(item) {
+  const d = item.data?.[0]
+  if (d?.nasa_id) router.push({ path: `/midias/${d.nasa_id}`, query: { title: d.title } })
 }
 </script>
 
@@ -69,12 +71,13 @@ function handleSearch() {
         <div
           v-for="(item, i) in results.slice(0, 30)"
           :key="i"
-          class="group rounded-2xl border border-white/[0.07] bg-white/[0.02] overflow-hidden hover:border-white/[0.15] hover:bg-white/[0.04] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-black/30"
+          class="group rounded-2xl border border-white/[0.07] bg-white/[0.02] overflow-hidden hover:border-white/[0.15] hover:bg-white/[0.04] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-black/30 cursor-pointer"
+          @click="openMedia(item)"
         >
           <div class="aspect-[4/3] bg-white/[0.03] flex items-center justify-center overflow-hidden relative">
             <img
-              v-if="thumbOf(item)"
-              :src="thumbOf(item)"
+              v-if="mediaThumb(item)"
+              :src="mediaThumb(item)"
               :alt="item.data?.[0]?.title"
               class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               loading="lazy"
@@ -87,14 +90,7 @@ function handleSearch() {
             <p class="text-xs font-medium text-white/80 line-clamp-2 leading-snug mb-2">{{ item.data?.[0]?.title }}</p>
             <div class="flex items-center justify-between">
               <span class="text-[10px] text-white/30">{{ item.data?.[0]?.date_created?.split('T')[0] }}</span>
-              <a
-                v-if="item.href"
-                :href="item.href"
-                target="_blank"
-                class="text-[10px] text-blue-400/70 hover:text-blue-300 transition-colors"
-              >
-                Detalhes ↗
-              </a>
+              <span class="text-[10px] text-white/30">Ver detalhe →</span>
             </div>
           </div>
         </div>

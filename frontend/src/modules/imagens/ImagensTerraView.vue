@@ -1,16 +1,7 @@
 <script setup>
-import { ref } from 'vue'
-import { useApi } from '../../composables/useApi.js'
+import { useEarthImagery } from '../../composables'
 
-const lat = ref('-23.5')
-const lon = ref('-46.6')
-const dim = ref('1')
-const { data: result, loading, error, searched, search } = useApi()
-
-function handleSearch() {
-  const params = new URLSearchParams({ lat: lat.value, lon: lon.value, dim: dim.value })
-  search(`/earth/imagery?${params}`)
-}
+const { lat, lon, dim, date, minDate, maxDate, result, loading, error, searched, handleSearch } = useEarthImagery()
 </script>
 
 <template>
@@ -49,6 +40,16 @@ function handleSearch() {
             class="w-28 bg-white/[0.04] border border-white/[0.08] rounded-lg px-4 py-2.5 text-sm outline-none focus:border-white/20 font-mono"
           />
         </div>
+        <div class="flex flex-col gap-1.5">
+          <label class="text-[10px] uppercase tracking-widest text-white/35">Data</label>
+          <input
+            v-model="date"
+            type="date"
+            :min="minDate"
+            :max="maxDate"
+            class="w-40 bg-white/[0.04] border border-white/[0.08] rounded-lg px-4 py-2.5 text-sm outline-none focus:border-white/20 font-mono [color-scheme:dark]"
+          />
+        </div>
         <button
           type="submit"
           class="px-6 py-2.5 bg-blue-500/20 border border-blue-500/30 text-blue-300 text-sm rounded-lg hover:bg-blue-500/30 transition-colors"
@@ -57,6 +58,11 @@ function handleSearch() {
         </button>
       </div>
     </form>
+
+    <!-- Datas disponíveis -->
+    <p v-if="minDate && maxDate" class="text-xs text-white/35 mb-6">
+      Datas disponíveis: {{ minDate }} até {{ maxDate }}
+    </p>
 
     <!-- Loading -->
     <div v-if="loading" class="flex items-center gap-3 text-sm text-white/40 py-16">

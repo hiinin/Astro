@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue'
-import { useApi } from '../../composables/useApi.js'
+import { useRequest as useApi } from '../../composables'
 
 const { data: weather, loading, error } = useApi({ immediate: true, url: '/insight/weather' })
 

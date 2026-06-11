@@ -1,3 +1,6 @@
+/**
+ * Composable para a cena 3D do globo terrestre (WebGPU + Three.js).
+ */
 import { ref, onMounted, onUnmounted } from 'vue'
 import * as THREE from 'three/webgpu'
 import {

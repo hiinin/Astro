@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed } from 'vue'
-import { useApi } from '../../composables/useApi.js'
+import { useRequest as useApi } from '../../composables'
 
 const kind = ref('patent')
 const query = ref('')

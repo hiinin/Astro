@@ -1,32 +1,23 @@
+/**
+ * Composable genérico para requisições reativas.
+ * Antigo "useApi" — renomeado para deixar claro que é um wrapper de request.
+ */
 import { ref, onMounted } from 'vue'
-
-function buildUrl(path) {
-  if (path.startsWith('http')) return path
-  if (path.startsWith('/api')) return path
-  return `/api${path.startsWith('/') ? path : `/${path}`}`
-}
+import { apiFetch } from './client.js'
 
 function resolveUrl(url) {
   return typeof url === 'function' ? url() : url
 }
 
-async function parseResponse(res, { parseErrorDetail = false } = {}) {
-  if (!res.ok) {
-    if (parseErrorDetail) {
-      const body = await res.json().catch(() => null)
-      throw new Error(body?.detail ?? String(res.status))
-    }
-    throw new Error(String(res.status))
-  }
-  return res.json()
-}
-
-export async function apiFetch(path, options = {}) {
-  const res = await fetch(buildUrl(path))
-  return parseResponse(res, options)
-}
-
-export function useApi(options = {}) {
+/**
+ * @param {object} options
+ * @param {*}        options.initialData   - valor inicial do ref `data`
+ * @param {boolean}  options.immediate     - dispara na montagem
+ * @param {string|Function} options.url    - URL (ou factory) para immediate
+ * @param {Function} options.transform     - transforma o JSON antes de guardar
+ * @param {boolean}  options.parseErrorDetail - extrai `detail` do body de erro
+ */
+export function useRequest(options = {}) {
   const {
     initialData = null,
     immediate = false,
@@ -73,4 +64,18 @@ export function useApi(options = {}) {
   }
 
   return { data, loading, error, searched, run, search }
+}
+
+/**
+ * Composable minimalista para carregar um detalhe avulso.
+ */
+export function useFetchDetail() {
+  const detail = ref(null)
+  async function load(path) {
+    if (path) detail.value = await apiFetch(path)
+  }
+  function clear() {
+    detail.value = null
+  }
+  return { detail, load, clear }
 }

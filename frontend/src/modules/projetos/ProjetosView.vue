@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { apiFetch } from '../../composables/useApi.js'
+import { apiFetch } from '../../composables'
 
 const router = useRouter()
 const projects = ref([])

@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useApi } from '../../composables/useApi.js'
+import { useRequest as useApi } from '../../composables'
 
 const tab = ref('fireball')
 const { data, loading, error, run } = useApi()
@@ -9,6 +9,32 @@ const tabs = [
   { id: 'fireball', label: 'Bolas de Fogo', endpoint: '/ssd/fireball', key: 'data', fields: ['date', 'energy', 'impact-e', 'lat', 'lon', 'alt', 'vel'] },
   { id: 'cad', label: 'Aproximações', endpoint: '/ssd/cad', key: 'data', fields: ['des', 'cd', 'dist', 'dist-min', 'v-rel', 'h', 'body'] },
   { id: 'sentry', label: 'Risco de Impacto', endpoint: '/ssd/sentry', key: 'data', fields: ['des', 'fullname', 'ip', 'ps_max', 'last_obs', 'v_inf'] },
+  {
+    id: 'nhats',
+    label: 'NHATS',
+    endpoint: '/ssd/nhats',
+    fields: ['des', 'fullname', 'diameter', 'H', 'n_obs'],
+    transform: (json) => (json.data ?? []).map((r) => ({
+      des: r.des,
+      fullname: r.fullname?.trim(),
+      diameter: r.min_size != null ? `${r.min_size}–${r.max_size} m` : '—',
+      H: r.h,
+      n_obs: r.occ,
+    })),
+  },
+  {
+    id: 'scout',
+    label: 'Scout',
+    endpoint: '/ssd/scout',
+    fields: ['des', 'fullname', 'diameter', 'H', 'v_inf'],
+    transform: (json) => (json.data ?? []).map((r) => ({
+      des: r.objectName,
+      fullname: `${r.nObs} obs · ${r.arc} d arco`,
+      diameter: r.caDist != null ? `${r.caDist} LD` : `MOID ${r.moid ?? '—'}`,
+      H: r.H,
+      v_inf: r.vInf ?? '—',
+    })),
+  },
 ]
 
 const fieldColors = {
@@ -50,7 +76,9 @@ function cellValue(row, field, index) {
 function fetchTab(id) {
   tab.value = id
   const t = tabs.find(x => x.id === id)
-  run(t.endpoint, { transform: (json) => json[t.key] ?? json })
+  run(t.endpoint, {
+    transform: t.transform ?? ((json) => json[t.key] ?? json),
+  })
 }
 
 const currentTab = () => tabs.find(t => t.id === tab.value)

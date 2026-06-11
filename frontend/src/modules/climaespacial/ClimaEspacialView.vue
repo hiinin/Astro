@@ -1,26 +1,8 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useApi } from '../../composables/useApi.js'
+import { DONKI_TABS, donkiId, donkiNote, donkiStart } from '../../composables'
+import { tabClass, useTabs } from '../../composables'
 
-const tab = ref('cme')
-const { data, loading, error, run } = useApi()
-
-const tabs = [
-  { id: 'cme',           label: 'Ejeções Coronais',      endpoint: '/donki/cme' },
-  { id: 'flr',           label: 'Erupções Solares',       endpoint: '/donki/flr' },
-  { id: 'gst',           label: 'Tempestades Geomag.',    endpoint: '/donki/gst' },
-  { id: 'notifications', label: 'Notificações',           endpoint: '/donki/notifications' },
-]
-
-function fetchTab(id) {
-  tab.value = id
-  const endpoint = tabs.find(t => t.id === id)?.endpoint
-  run(endpoint, {
-    transform: (json) => (Array.isArray(json) ? json : (json.items ?? [])),
-  })
-}
-
-onMounted(() => fetchTab('cme'))
+const { tab, tabs, data, loading, error, load } = useTabs(DONKI_TABS)
 </script>
 
 <template>
@@ -30,17 +12,14 @@ onMounted(() => fetchTab('cme'))
     </header>
 
     <!-- Tabs em cards -->
-    <div class="grid grid-cols-4 gap-3 mb-8">
+    <div class="grid grid-cols-5 gap-3 mb-8">
       <button
         v-for="t in tabs"
         :key="t.id"
-        @click="fetchTab(t.id)"
-        class="flex flex-col items-start gap-2 rounded-xl border px-4 py-3.5 text-left transition-colors"
-        :class="tab === t.id
-          ? 'border-blue-500/40 bg-blue-500/10 text-blue-200'
-          : 'border-white/[0.08] bg-white/[0.02] text-white/50 hover:bg-white/[0.04] hover:text-white/70'"
+        @click="load(t.id)"
+        :class="tabClass(tab === t.id)"
       >
-        <span class="text-xs font-medium leading-snug">{{ t.label }}</span>
+        {{ t.label }}
       </button>
     </div>
 
@@ -68,17 +47,17 @@ onMounted(() => fetchTab('cme'))
         <!-- Badge tipo -->
         <div class="shrink-0">
           <span class="text-xs px-2.5 py-1 rounded-lg bg-blue-500/10 text-blue-300 border border-blue-500/20 font-mono font-medium">
-            {{ item.cmeAnalyses?.[0]?.type ?? item.classType ?? item.kpIndex ?? tab.toUpperCase() }}
+            {{ tab.toUpperCase() }}
           </span>
         </div>
 
         <!-- ID + observação -->
         <div class="flex-1 min-w-0">
           <p class="text-xs font-mono text-white/35 mb-0.5 truncate">
-            {{ item.activityID ?? item.notificationID ?? `#${i + 1}` }}
+            {{ donkiId(item, i) }}
           </p>
           <p class="text-sm text-white/60 truncate">
-            {{ item.note ?? item.messageBody ?? '—' }}
+            {{ donkiNote(item) }}
           </p>
         </div>
 
@@ -86,7 +65,7 @@ onMounted(() => fetchTab('cme'))
         <div class="shrink-0 flex flex-col gap-0.5 text-right">
           <span class="text-[10px] uppercase tracking-widest text-white/30">Início</span>
           <span class="text-xs text-white/55 font-mono">
-            {{ item.beginTime ?? item.startTime ?? item.messageIssueTime ?? '—' }}
+            {{ donkiStart(item) }}
           </span>
         </div>
       </div>

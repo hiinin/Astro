@@ -97,6 +97,12 @@ const routes = [
         meta: { label: 'Satélites' }
       },
       {
+        path: 'satelites/:id',
+        name: 'satelites-detalhe',
+        component: () => import('../modules/satelites/SatelitesDetalhe.vue'),
+        meta: { label: 'Satélites' }
+      },
+      {
         path: 'sistema-solar',
         name: 'sistema-solar',
         component: () => import('../modules/sistemasolar/SistemaSolarView.vue'),
@@ -115,9 +121,27 @@ const routes = [
         meta: { label: 'Ciência Aberta' }
       },
       {
+        path: 'ciencia-aberta/:type/:id',
+        name: 'ciencia-aberta-detalhe',
+        component: () => import('../modules/cienciaaberta/CienciaAbertaDetalhe.vue'),
+        meta: { label: 'Ciência Aberta' }
+      },
+      {
         path: 'midias',
         name: 'midias',
         component: () => import('../modules/midias/MidiasView.vue'),
+        meta: { label: 'Mídias' }
+      },
+      {
+        path: 'midias/album/:id',
+        name: 'midias-album',
+        component: () => import('../modules/midias/MidiasAlbumView.vue'),
+        meta: { label: 'Mídias' }
+      },
+      {
+        path: 'midias/:id',
+        name: 'midias-detalhe',
+        component: () => import('../modules/midias/MidiasDetalhe.vue'),
         meta: { label: 'Mídias' }
       },
       {

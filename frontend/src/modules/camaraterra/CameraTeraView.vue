@@ -1,20 +1,23 @@
 <script setup>
-import { useApi } from '../../composables/useApi.js'
+import { epicDateOf, epicImageUrl, useEpic } from '../../composables'
+import { tabClass } from '../../composables'
 
-function epicImageUrl(img) {
-  const [y, m, d] = img.date.split(' ')[0].split('-')
-  return `https://epic.gsfc.nasa.gov/archive/natural/${y}/${m}/${d}/png/${img.image}.png`
-}
-
-const { data: images, loading, error } = useApi({ immediate: true, url: '/epic/natural' })
+const { tab, tabs, data, loading, error, dateDetail, mode, isDates, dateKind, switchTab, loadDate } = useEpic()
 </script>
 
 <template>
   <div class="min-h-full px-10 py-8 text-white">
     <header class="mb-8">
       <h1 class="text-4xl font-bold mb-1">Câmera da Terra</h1>
-      <p class="text-sm text-white/40">Imagens naturais da Terra capturadas pela câmera DSCOVR/EPIC.</p>
+      <p class="text-sm text-white/40">Imagens da Terra capturadas pela câmera DSCOVR/EPIC — natural e enhanced.</p>
     </header>
+
+    <!-- Tabs -->
+    <div class="flex gap-2 mb-6 flex-wrap">
+      <button v-for="t in tabs" :key="t.id" :class="tabClass(tab === t.id)" @click="switchTab(t.id)">
+        {{ t.label }}
+      </button>
+    </div>
 
     <div v-if="loading" class="flex items-center gap-3 text-sm text-white/40 py-16">
       <span class="size-4 rounded-full border-2 border-white/10 border-t-blue-400 animate-spin" />
@@ -23,41 +26,45 @@ const { data: images, loading, error } = useApi({ immediate: true, url: '/epic/n
 
     <p v-else-if="error" class="text-sm text-red-400 py-16">Falha ao carregar os dados ({{ error }}).</p>
 
-    <div v-else-if="images" class="rounded-2xl border border-white/[0.08] overflow-hidden">
-      <table class="w-full text-xs">
-        <thead>
-          <tr class="bg-white/[0.04] border-b border-white/[0.08] text-white/40 uppercase tracking-widest text-[10px] font-medium">
-            <th class="px-5 py-3 text-left w-14">Foto</th>
-            <th class="px-5 py-3 text-left">Imagem</th>
-            <th class="px-5 py-3 text-left">Data</th>
-            <th class="px-5 py-3 text-left">Legenda</th>
-            <th class="px-5 py-3 text-right">Lat</th>
-            <th class="px-5 py-3 text-right">Lon</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            v-for="img in images.slice(0, 16)"
-            :key="img.identifier"
-            class="border-b border-white/[0.04] last:border-0 hover:bg-white/[0.03] transition-colors"
-          >
-            <td class="px-4 py-2.5">
-              <img
-                :src="epicImageUrl(img)"
-                :alt="img.caption"
-                loading="lazy"
-                class="w-10 h-10 rounded-lg object-cover border border-white/[0.08]"
-              />
-            </td>
-            <td class="px-5 py-2.5 font-mono text-white/40 text-[11px]">{{ img.image }}</td>
-            <td class="px-5 py-2.5 text-white/60 whitespace-nowrap">{{ img.date?.split(' ')[0] }}</td>
-            <td class="px-5 py-2.5 text-white/70 max-w-xs truncate">{{ img.caption }}</td>
-            <td class="px-5 py-2.5 text-right font-mono text-white/50">{{ img.centroid_coordinates?.lat?.toFixed(2) }}°</td>
-            <td class="px-5 py-2.5 text-right font-mono text-white/50">{{ img.centroid_coordinates?.lon?.toFixed(2) }}°</td>
-          </tr>
-        </tbody>
-      </table>
+    <!-- Dates mode -->
+    <div v-else-if="isDates() && data?.length" class="grid grid-cols-4 gap-3">
+      <button
+        v-for="d in data.slice(0, 32)"
+        :key="epicDateOf(d)"
+        class="text-xs text-white/50 px-3 py-2 rounded-lg border border-white/[0.08] hover:border-white/20 text-left transition-colors"
+        @click="loadDate(d)"
+      >{{ epicDateOf(d) }}</button>
     </div>
 
+    <!-- Images mode -->
+    <div v-else-if="data?.length" class="grid grid-cols-4 gap-4">
+      <div v-for="img in data.slice(0, 12)" :key="img.identifier" class="rounded-xl border border-white/[0.08] overflow-hidden">
+        <img
+          :src="epicImageUrl(img, mode())"
+          :alt="img.caption"
+          loading="lazy"
+          class="w-full aspect-square object-cover"
+        />
+        <div class="p-3">
+          <p class="text-xs text-white/60 truncate">{{ img.caption }}</p>
+          <p class="text-[10px] text-white/30 mt-1">{{ img.date?.split(' ')[0] }}</p>
+        </div>
+      </div>
+    </div>
+
+    <p v-else class="text-sm text-white/40 py-8">Nenhuma imagem disponível.</p>
+
+    <!-- Date detail images -->
+    <div v-if="dateDetail?.length" class="mt-6 grid grid-cols-4 gap-4">
+      <div v-for="img in dateDetail.slice(0, 8)" :key="img.identifier" class="rounded-xl border border-white/[0.08] overflow-hidden">
+        <img
+          :src="epicImageUrl(img, dateKind())"
+          :alt="img.caption"
+          loading="lazy"
+          class="w-full aspect-square object-cover"
+        />
+        <p class="p-3 text-xs text-white/60 truncate">{{ img.caption }}</p>
+      </div>
+    </div>
   </div>
 </template>
