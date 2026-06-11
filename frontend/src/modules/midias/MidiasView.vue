@@ -27,7 +27,6 @@ function openMedia(item) {
     <!-- Header -->
     <header class="mb-10">
       <h1 class="text-3xl font-bold tracking-tight mb-2">Mídias</h1>
-      <p class="text-sm text-white/50 max-w-md">Explore a vasta biblioteca de imagens capturadas durante missões, experimentos e observações espaciais.</p>
     </header>
 
     <!-- Search bar -->

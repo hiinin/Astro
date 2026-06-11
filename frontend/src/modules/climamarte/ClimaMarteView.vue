@@ -15,7 +15,6 @@ const latestSol = computed(() => {
   <div class="min-h-full px-10 py-8 text-white">
     <header class="mb-8">
       <h1 class="text-4xl font-bold mb-1">Clima em Marte</h1>
-      <p class="text-sm text-white/40">Dados meteorológicos da missão InSight na superfície marciana.</p>
     </header>
 
     <div v-if="loading" class="flex items-center gap-3 text-sm text-white/40 py-16">

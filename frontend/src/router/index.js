@@ -21,7 +21,7 @@ const routes = [
       {
         path: 'inicio',
         name: 'inicio',
-        component: () => import('../modules/inicio/inicioView.vue'),
+        component: () => import('../modules/inicio/InicioView.vue'),
         meta: { label: 'Início' }
       },
       {
@@ -33,7 +33,7 @@ const routes = [
       {
         path: 'asteroides/:id',
         name: 'asteroides-detail',
-        component: () => import('../modules/asteroides/AsteroidesDetailView.vue'),
+        component: () => import('../modules/asteroides/AsteroidesDetalheView.vue'),
         meta: { label: 'Asteroides' }
       },
       {
@@ -63,13 +63,13 @@ const routes = [
       {
         path: 'rovers-marte',
         name: 'rovers-marte',
-        component: () => import('../modules/roversmarte/RoversMarte.vue'),
+        component: () => import('../modules/roversmarte/RoversMarteView.vue'),
         meta: { label: 'Rovers em Marte' }
       },
       {
         path: 'rovers-marte/:rover',
         name: 'rovers-marte-detalhe',
-        component: () => import('../modules/roversmarte/RoversMarteDetalhe.vue'),
+        component: () => import('../modules/roversmarte/RoversMarteDetalheView.vue'),
         meta: { label: 'Rovers em Marte' }
       },
       {
@@ -87,7 +87,7 @@ const routes = [
       {
         path: 'eventos-naturais/:id',
         name: 'eventos-naturais-detalhe',
-        component: () => import('../modules/eventosnaturais/EventosNaturaisDetalhe.vue'),
+        component: () => import('../modules/eventosnaturais/EventosNaturaisDetalheView.vue'),
         meta: { label: 'Eventos Naturais' }
       },
       {
@@ -99,7 +99,7 @@ const routes = [
       {
         path: 'satelites/:id',
         name: 'satelites-detalhe',
-        component: () => import('../modules/satelites/SatelitesDetalhe.vue'),
+        component: () => import('../modules/satelites/SatelitesDetalheView.vue'),
         meta: { label: 'Satélites' }
       },
       {
@@ -123,7 +123,7 @@ const routes = [
       {
         path: 'ciencia-aberta/:type/:id',
         name: 'ciencia-aberta-detalhe',
-        component: () => import('../modules/cienciaaberta/CienciaAbertaDetalhe.vue'),
+        component: () => import('../modules/cienciaaberta/CienciaAbertaDetalheView.vue'),
         meta: { label: 'Ciência Aberta' }
       },
       {
@@ -141,7 +141,7 @@ const routes = [
       {
         path: 'midias/:id',
         name: 'midias-detalhe',
-        component: () => import('../modules/midias/MidiasDetalhe.vue'),
+        component: () => import('../modules/midias/MidiasDetalheView.vue'),
         meta: { label: 'Mídias' }
       },
       {
@@ -153,7 +153,7 @@ const routes = [
       {
         path: 'projetos/:id',
         name: 'projetos-detalhe',
-        component: () => import('../modules/projetos/ProjetosDetalhe.vue'),
+        component: () => import('../modules/projetos/ProjetosDetalheView.vue'),
         meta: { label: 'Projetos' }
       },
       {

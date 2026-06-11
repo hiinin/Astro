@@ -9,7 +9,6 @@ const { lat, lon, dim, date, minDate, maxDate, result, loading, error, searched,
 
     <header class="mb-8">
       <h1 class="text-4xl font-bold mb-1">Imagens da Terra</h1>
-      <p class="text-sm text-white/40">MODIS Terra (GIBS) — imagem por coordenada via NASA Earthdata.</p>
     </header>
 
     <!-- Formulário -->

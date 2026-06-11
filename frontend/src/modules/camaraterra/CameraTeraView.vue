@@ -9,7 +9,6 @@ const { tab, tabs, data, loading, error, dateDetail, mode, isDates, dateKind, sw
   <div class="min-h-full px-10 py-8 text-white">
     <header class="mb-8">
       <h1 class="text-4xl font-bold mb-1">Câmera da Terra</h1>
-      <p class="text-sm text-white/40">Imagens da Terra capturadas pela câmera DSCOVR/EPIC — natural e enhanced.</p>
     </header>
 
     <!-- Tabs -->
