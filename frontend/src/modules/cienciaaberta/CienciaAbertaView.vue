@@ -6,8 +6,6 @@ const query = ref('')
 const studies = ref([])
 const total = ref(0)
 const selected = ref(null)
-const detailData = ref(null)
-const showRaw = ref(false)
 const { loading, error, run } = useApi()
 
 function formatMission(mission) {
@@ -33,24 +31,15 @@ function normalize(hit) {
     factor: src['Study Factor Name']?.trim() || null,
     assayType: src['Study Assay Technology Type']?.trim() || null,
     platform: src['Study Assay Technology Platform']?.trim() || null,
-    raw: src,
   }
 }
 
-async function selectStudy(study) {
+function selectStudy(study) {
   selected.value = study
-  showRaw.value = false
-  detailData.value = null
-
-  if (study.id) {
-    const meta = await run(`/osdr/study/meta/${study.id}`)
-    if (meta) detailData.value = meta
-  }
 }
 
 function closeDetail() {
   selected.value = null
-  detailData.value = null
 }
 
 async function load() {
@@ -215,34 +204,7 @@ onMounted(load)
                 </div>
               </div>
 
-              <!-- Metadata from API -->
-              <div v-if="detailData" class="space-y-1.5">
-                <p class="text-[11px] uppercase tracking-widest text-white/35 font-medium">Metadados adicionais</p>
-                <div class="rounded-lg bg-white/[0.03] border border-white/[0.06] p-4">
-                  <pre class="text-[11px] text-white/50 overflow-auto max-h-48 leading-relaxed whitespace-pre-wrap">{{ JSON.stringify(detailData, null, 2) }}</pre>
-                </div>
-              </div>
 
-              <!-- Loading detail indicator -->
-              <div v-if="loading && !detailData" class="flex items-center gap-2 text-xs text-white/40">
-                <span class="size-3 rounded-full border-2 border-white/10 border-t-blue-400 animate-spin" />
-                Carregando metadados...
-              </div>
-
-              <!-- Raw JSON -->
-              <div class="border-t border-white/[0.06] pt-4">
-                <button
-                  type="button"
-                  class="text-xs text-white/40 hover:text-white/70 transition-colors"
-                  @click="showRaw = !showRaw"
-                >
-                  {{ showRaw ? '▾ Ocultar' : '▸ Ver' }} dados brutos (JSON)
-                </button>
-                <pre
-                  v-if="showRaw"
-                  class="mt-3 text-[10px] text-white/40 overflow-auto max-h-64 leading-relaxed bg-white/[0.02] rounded-lg p-4 border border-white/[0.05]"
-                >{{ JSON.stringify(selected.raw, null, 2) }}</pre>
-              </div>
             </div>
           </div>
 
